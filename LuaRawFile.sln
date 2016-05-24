@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaRawFile", "LuaRawFile.vcxproj", "{465AAF83-C74B-4F95-8042-C11F0BAD6A55}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		51|x86 = 51|x86
+		52|x86 = 52|x86
+		53|x86 = 53|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{465AAF83-C74B-4F95-8042-C11F0BAD6A55}.51|x86.ActiveCfg = 51|Win32
+		{465AAF83-C74B-4F95-8042-C11F0BAD6A55}.51|x86.Build.0 = 51|Win32
+		{465AAF83-C74B-4F95-8042-C11F0BAD6A55}.52|x86.ActiveCfg = 52|Win32
+		{465AAF83-C74B-4F95-8042-C11F0BAD6A55}.52|x86.Build.0 = 52|Win32
+		{465AAF83-C74B-4F95-8042-C11F0BAD6A55}.53|x86.ActiveCfg = 53|Win32
+		{465AAF83-C74B-4F95-8042-C11F0BAD6A55}.53|x86.Build.0 = 53|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
