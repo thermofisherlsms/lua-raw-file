@@ -150,6 +150,12 @@ namespace RawFile {
 	int getInAcquisition(lua_State* L);
 	int getPrecursorMass(lua_State* L);
 	int getSegmentsForScanNumber(lua_State* L);
+	int getLowMass(lua_State* L);
+	int getHighMass(lua_State* L);
+	int getInstName(lua_State* L);
+	int getSWVersion(lua_State* L);
+	int getErrorLogCount(lua_State* L);
+	int getErrorLogItem(lua_State* L);
 	int releaseRawfile(lua_State* L);
 
 	static const struct luaL_Reg thermo_rawfile_m[] = {
@@ -173,6 +179,12 @@ namespace RawFile {
 		{ "InAcquisition", getInAcquisition },
 		{ "GetRawFileMetaTable", getMetaTable },
 		{ "GetNumSegments", getSegmentsForScanNumber },
+		{ "GetLowMass", getLowMass},
+		{ "GetHighMass", getHighMass },
+		{ "GetInstName", getInstName },
+		{ "GetInstSoftwareVersion", getSWVersion },
+		{ "GetNumErrorLog", getErrorLogCount },
+		{ "GetErrorLogItem", getErrorLogItem },
 		{ "__tostring", rawFileToString },
 		{ "__gc", releaseRawfile },
 		{ "__index", __index },

@@ -33,6 +33,13 @@ print(rawFile.IsOpen)			-- Status if the connection is open or not
 print(rawFile:InAcquisition())	-- Usually will be false, variable to spin on
 print(rawFile:GetInstrumentMethod(1))
 
+print(rawFile:GetLowMass())
+print(rawFile:GetHighMass())
+print(rawFile:GetInstName())
+print(rawFile:GetInstSoftwareVersion())
+print(rawFile:GetNumErrorLog())
+print(rawFile:GetErrorLogItem(1))
+
 -- Helper function 
 local printf = function(formatString, ...)
 	print(string.format(formatString, ...))

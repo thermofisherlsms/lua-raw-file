@@ -7,6 +7,7 @@
  */
 
 #include "RawFile.h"
+#include "comutil.h"
 
 namespace RawFile {
 
@@ -737,6 +738,93 @@ namespace RawFile {
 		rawFile->comRawFile->GetSegmentAndEventForScanNum(sn, &segs, &events);
 		lua_pushinteger(L, segs);
 		lua_pushinteger(L, events);
+		return 2;
+	}
+
+	int getLowMass(lua_State* L)
+	{
+		RawFile *rawFile = checkRawFile(L);
+		double lowMass(0);
+		HRESULT hr = rawFile->comRawFile->GetLowMass(&lowMass);
+		if (FAILED(hr)) 
+		{
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		lua_pushnumber(L, lowMass);
+		return 1;
+	}
+
+	int getHighMass(lua_State* L)
+	{
+		RawFile *rawFile = checkRawFile(L);
+		double highMass(0);
+		HRESULT hr = rawFile->comRawFile->GetHighMass(&highMass);
+		if (FAILED(hr))
+		{
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		lua_pushnumber(L, highMass);
+		return 1;
+	}
+
+	int getInstName(lua_State* L)
+	{	
+		RawFile *rawFile = checkRawFile(L);
+		BSTR name = NULL; // the assignment to null is needed for some odd reason
+		HRESULT hr = rawFile->comRawFile->GetInstName(&name);
+		if (FAILED(hr))
+		{
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		lua_pushstring(L, _bstr_t(name));
+		return 1;
+	}
+
+	int getSWVersion(lua_State* L)
+	{
+		RawFile *rawFile = checkRawFile(L);
+		BSTR version = NULL; // the assignment to null is needed for some odd reason
+		HRESULT hr = rawFile->comRawFile->GetInstSoftwareVersion(&version);
+		if (FAILED(hr))
+		{
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		lua_pushstring(L, _bstr_t(version));
+		return 1;
+	}
+
+	int getErrorLogCount(lua_State* L)
+	{
+		RawFile *rawFile = checkRawFile(L);		
+		long count(0);
+		HRESULT hr = rawFile->comRawFile->GetNumErrorLog(&count);
+		if (FAILED(hr))
+		{
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		lua_pushinteger(L, count);
+		return 1;
+	}
+
+	int getErrorLogItem(lua_State* L)
+	{
+		RawFile *rawFile = checkRawFile(L);
+		long id = (long)luaL_checkinteger(L, 2);
+		BSTR message = NULL; // the assignment to null is needed for some odd reason
+		double rt(0);
+		HRESULT hr = rawFile->comRawFile->GetErrorLogItem(id, &rt, &message);
+		if (FAILED(hr))
+		{
+			lua_pushboolean(L, false);
+			return 1;
+		}		
+		lua_pushstring(L, _bstr_t(message));
+		lua_pushnumber(L, rt);
 		return 2;
 	}
 
