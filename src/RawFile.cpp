@@ -1,3 +1,6 @@
+/// RawFile
+//  @module	lrf
+
 /* RawFile.cpp
  *
  * Copyright (C) 2016 Thermo Fisher Scientific
@@ -60,6 +63,26 @@ namespace RawFile {
 		std::string::const_iterator it = s.begin();
 		while (it != s.end() && std::isdigit(*it) || *it == '.' ) ++it;
 		return !s.empty() && it == s.end();
+	}
+
+	static int ListToTable(lua_State* L, VARIANT* items, int size)
+	{
+		lua_createtable(L, size, 0);
+
+		BSTR* pItems = NULL;
+		SAFEARRAY FAR* itemsSA = items->parray;
+		SafeArrayAccessData(itemsSA, (void**)(&pItems));
+		for (int i = 0; i < size; i++)
+		{
+			CStringA value = (CStringA)pItems[i];
+			std::string sValue((LPCTSTR)value);
+			lua_pushstring(L, sValue.c_str());
+			lua_rawseti(L, -2, i + 1);
+		}
+		SafeArrayUnaccessData(itemsSA);
+		SafeArrayDestroy(itemsSA);
+
+		return 1;
 	}
 
 	static int MapToStack(lua_State* L, VARIANT* labels, VARIANT* values, int size)
@@ -138,6 +161,13 @@ namespace RawFile {
 		VariantClear(value);
 	}	
 
+	/***
+	Create a new instance of the rawfile 
+
+	@function 		New
+	@string 		filePath The path to the rawfile
+	@treturn 		rawFile The Lua wrapped access to the rawfile
+	*/
 	int newRawFile(lua_State* L)
 	{
 		const char* filePath = luaL_checkstring(L, -1);
@@ -168,6 +198,10 @@ namespace RawFile {
 		// return the userdata
 		return 1;
 	}
+	
+	/// a
+	// @type rawFile
+
 
 	int openRawFile(lua_State* L)
 	{
@@ -381,6 +415,22 @@ namespace RawFile {
 		return 1;
 	}
 
+	int getNumInstMethods(lua_State* L)
+	{
+		RawFile *rawFile = checkRawFile(L);
+		try {	
+			long number(0);			
+			HRESULT hr = rawFile->comRawFile->GetNumInstMethods(&number);
+			if (SUCCEEDED(hr)) {
+				lua_pushnumber(L, number);
+				return 1;
+			}
+		}
+		catch (...) {}
+		lua_pushnil(L);
+		return 1;
+	}
+
 	int getInstrumentMethod(lua_State* L)
 	{
 		RawFile *rawFile = checkRawFile(L);
@@ -392,13 +442,55 @@ namespace RawFile {
 			if (SUCCEEDED(hr) && str != NULL) {
 				CStringA returnString = CStringA(str);
 				SysFreeString(str);
-				lua_pushstring(L, returnString);
+				lua_pushstring(L, returnString);				
 				return 1;
 			}
 		}
 		catch (...) {}
 		lua_pushnil(L);
 		return 1;
+	}
+
+	int getInstrumentMethodNames(lua_State* L)
+	{
+		RawFile *rawFile = checkRawFile(L);	
+				
+		try {		
+			long number(0);
+			VARIANT names;
+			VariantInit(&names);
+			HRESULT hr = rawFile->comRawFile->GetInstMethodNames(&number, &names);
+			if (SUCCEEDED(hr)) 
+			{
+				ListToTable(L, &names, number);
+				VariantClear(&names);
+				lua_pushnumber(L, number);
+				return 2;
+			}
+			VariantClear(&names);
+		}
+		catch (...) {}	
+		lua_pushnil(L);
+		return 1;
+	}
+	
+	int getIsolationWidthForScanNum(lua_State* L)
+	{
+		RawFile *rawFile = checkRawFile(L);
+		long sn = (long)luaL_checkinteger(L, 2);
+		long msOrder = 2;
+
+		if (lua_gettop(L) == 3) 
+		{
+			msOrder = (long)luaL_checkinteger(L, 3);
+		}
+
+		double width = 0;
+		rawFile->comRawFile->GetIsolationWidthForScanNum(sn, msOrder, &width);
+
+		lua_pushnumber(L, width);
+		lua_pushinteger(L, msOrder);
+		return 2;
 	}
 
 	int getRetentionTime(lua_State* L)
@@ -701,6 +793,13 @@ namespace RawFile {
 		return 1;
 	}
 
+	/***
+	Get the precursor mass of a given MSn stage in a spectrum
+	@function GetPrecursorMass
+	@int 			sn The spectrum number
+	@int[opt=2] 	msn The precursor MSn stage
+	@treturn 		float The precursor mass at the given stage
+	*/
 	int getPrecursorMass(lua_State* L)
 	{
 		RawFile *rawFile = checkRawFile(L);
@@ -796,6 +895,50 @@ namespace RawFile {
 		lua_pushstring(L, _bstr_t(version));
 		return 1;
 	}
+
+	int getSerialNumber(lua_State* L)
+	{
+		RawFile *rawFile = checkRawFile(L);
+		BSTR serialNumber = NULL;
+		HRESULT hr = rawFile->comRawFile->GetInstSerialNumber(&serialNumber);
+		if (FAILED(hr))
+		{
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		lua_pushstring(L, _bstr_t(serialNumber));
+		return 1;
+	}
+
+	int getHWVersion(lua_State* L)
+	{
+		RawFile *rawFile = checkRawFile(L);
+		BSTR version = NULL;
+		HRESULT hr = rawFile->comRawFile->GetInstHardwareVersion(&version);
+		if (FAILED(hr))
+		{
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		lua_pushstring(L, _bstr_t(version));
+		return 1;
+	}
+
+	int getInstModel(lua_State* L)
+	{
+		RawFile *rawFile = checkRawFile(L);
+		BSTR model = NULL;
+		HRESULT hr = rawFile->comRawFile->GetInstModel(&model);
+		if (FAILED(hr))
+		{
+			lua_pushboolean(L, false);
+			return 1;
+		}
+		lua_pushstring(L, _bstr_t(model));
+		return 1;
+	}
+	
+
 
 	int getErrorLogCount(lua_State* L)
 	{

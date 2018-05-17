@@ -24,7 +24,7 @@ local RawFile = require("LuaRawFile")
 print(RawFile.Version)	
 
 -- Create a rawfile given a path to a rawfile
-local rawFile = assert(RawFile.New("Basic.raw"))
+local rawFile = assert(RawFile.New([[Basic.raw]]))
 
 print(type(rawFile))			-- RawFile is userdata in c++
 print(rawFile.FilePath)			-- Filepath to the raw file
@@ -36,9 +36,16 @@ print(rawFile:GetInstrumentMethod(1))
 print(rawFile:GetLowMass())
 print(rawFile:GetHighMass())
 print(rawFile:GetInstName())
+print(rawFile:GetInstSerialNumber())
+print(rawFile:GetInstHardwareVersion())
+print(rawFile:GetInstModel())
 print(rawFile:GetInstSoftwareVersion())
 print(rawFile:GetNumErrorLog())
 print(rawFile:GetErrorLogItem(1))
+print(rawFile:GetNumberOfInstrumentMethods())
+for i,name in ipairs(rawFile:GetInstrumentMethodNames()) do
+    print("Instrument Method Index:",i,"name:",name)
+end
 
 -- Helper function 
 local printf = function(formatString, ...)

@@ -1,4 +1,17 @@
-local RawFile = require("LuaRawFile.core")
+--- Lua Raw File.
+--
+-- @type rawFile
+local RawFile
+local result
+
+-- try to load the commoncore implmentation, use pcall 
+-- because it can fail when loading invalid files
+result, RawFile = pcall(require, "LuaRawFileCC")
+
+if not result then 
+    -- if not, fall back to the MsFileReader version
+    RawFile = require("LuaRawFile.core")
+end
 
 -- This function will add the pattern matching escape
 -- character to all punctuation characters.  At least
@@ -68,8 +81,10 @@ end
 local rawFileMT = RawFile.GetRawFileMetaTable()
 
 -- Simple example to show how to set the __len (#) operator for userdata
-function rawFileMT:__len() 
-	return self.LastSpectrumNumber - self.FirstSpectrumNumber
+if not rawFileMT.__len then
+    function rawFileMT:__len() 
+        return self.LastSpectrumNumber - self.FirstSpectrumNumber
+    end
 end
 
 -- Get an event parameter from the method
@@ -114,17 +129,6 @@ function rawFileMT:GetMethodGlobalParameter(l_args)
   return GetMethodParameterBelow(self, l_below, l_args.label, l_args.partial)
 end
 
-
---[[
-	One way to get parameters from the method summary is to just ask for all matches
-	of a certain type.  Then you'll have to know that you want the first, second, third, etc
-	
-			+--<< return an array of matches
-			|								+--- string match pattern
-			|								|			+--- conversion function for the match
-			|								|			|
-			v								v			v
---]]
 function rawFileMT:GetArrayOfMethodMatches( pattern, converter )
 	local matches = {}
 	for mch in string.gmatch(self:GetInstrumentMethod(1), pattern) do
@@ -144,14 +148,6 @@ function rawFileMT:GetIsolationMZ(sn, msn)
 	return tonumber(m)
 end
 
---[[
-	helper function to get things from the filter
-							+--- string filter
-							|		+--- string pattern to search for 
-							|		|		+--- optional function, say to convert to a number
-							|		|		|
-							v		v		v
---]]
 local function _Extract( filter, pattern, Converter )
 	Converter = Converter or function(x) return x end
 
@@ -189,6 +185,10 @@ function rawFileMT:GetCollisionEnergy(sn)
 	return values and values[1]	
 end
 
+--- Get the first mass of the spectrum.
+-- @function GetFirstMass
+-- @param sn The Scan Number
+-- @return The first mass of the spectrum
 function rawFileMT:GetFirstMass(sn)
 	return string.match( self:GetScanFilter(sn), "%[(%d+.%d+)-")
 end

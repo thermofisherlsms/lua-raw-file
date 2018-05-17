@@ -139,7 +139,10 @@ namespace RawFile {
 	int scanHeader(lua_State* L);
 	int newRawFile(lua_State* L);
 	static int getMetaTable(lua_State* L) {luaL_getmetatable(L, RawFileType);	return 1;}
+	int getNumInstMethods(lua_State* L);
 	int getInstrumentMethod(lua_State* L);
+	int getIsolationWidthForScanNum(lua_State* L);
+	int getInstrumentMethodNames(lua_State* L);
 	int getRetentionTime(lua_State* L);
 	int getScanNumberFromRT(lua_State* L);
 	int getMSNOrder(lua_State* L);
@@ -154,6 +157,9 @@ namespace RawFile {
 	int getHighMass(lua_State* L);
 	int getInstName(lua_State* L);
 	int getSWVersion(lua_State* L);
+	int getSerialNumber(lua_State* L);
+	int getHWVersion(lua_State* L);
+	int getInstModel(lua_State* L);
 	int getErrorLogCount(lua_State* L);
 	int getErrorLogItem(lua_State* L);
 	int releaseRawfile(lua_State* L);
@@ -167,7 +173,10 @@ namespace RawFile {
 		{ "GetStatusLog", statusLog },
 		{ "GetScanFilter", scanFilter },
 		{ "GetScanHeader", scanHeader },
+		{ "GetNumberOfInstrumentMethods", getNumInstMethods},
 		{ "GetInstrumentMethod", getInstrumentMethod },
+		{ "GetInstrumentMethodNames", getInstrumentMethodNames},
+		{ "GetIsolationWidth", getIsolationWidthForScanNum },		
 		{ "GetRetentionTime", getRetentionTime },
 		{ "GetScanNumberFromRT", getScanNumberFromRT },
 		{ "GetMSNOrder", getMSNOrder },
@@ -183,6 +192,9 @@ namespace RawFile {
 		{ "GetHighMass", getHighMass },
 		{ "GetInstName", getInstName },
 		{ "GetInstSoftwareVersion", getSWVersion },
+		{ "GetInstSerialNumber", getSerialNumber},
+		{ "GetInstHardwareVersion", getHWVersion},
+		{ "GetInstModel", getInstModel},
 		{ "GetNumErrorLog", getErrorLogCount },
 		{ "GetErrorLogItem", getErrorLogItem },
 		{ "__tostring", rawFileToString },
