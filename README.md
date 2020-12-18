@@ -1,9 +1,13 @@
 # lua-raw-file
+
+## About
 Lua wrapper to access data from the Thermo raw data file format
 
 The module is compatible with Lua 5.1, 5.2, 5.3 and Lua JIT (5.1).
 
 We recommend the [ZeroBrane Studio](https://github.com/pkulchenko/ZeroBraneStudio/) IDE for editing and executing Lua scripts.
+
+This repository is intended to be used for scholarly research, and is therefore made available as-is.  Ongoing maintenance and support is not generally available; however, issues and improvements will be considered on a case-by-case basis.
 
 # Usage
 
